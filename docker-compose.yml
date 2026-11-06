@@ -1,0 +1,28 @@
+services:
+  n8n:
+    image: n8nio/n8n:2.46.6
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    env_file:
+      - .env.n8n
+    environment:
+      GENERIC_TIMEZONE: UTC
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      NODE_FUNCTION_ALLOW_BUILTIN: crypto
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/workflows:ro
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - >-
+        n8n import:workflow --separate --input=/workflows &&
+        n8n publish:workflow --id=lendloopError001 &&
+        n8n publish:workflow --id=lendloopNotify01 &&
+        n8n publish:workflow --id=lendloopRemind01 &&
+        exec n8n start
+
+volumes:
+  n8n_data:

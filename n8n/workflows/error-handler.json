@@ -1,0 +1,97 @@
+{
+  "id": "lendloopError001",
+  "name": "LendLoop - Error handler",
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "A workflow failed",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "sign",
+      "name": "Sign failure report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst path = '/n8n/workflow-errors';\nconst { execution, workflow } = $input.first().json;\n\nconst body = JSON.stringify({\n  executionId: String(execution.id),\n  workflow: workflow.name,\n  node: execution.lastNodeExecuted ?? 'unknown',\n  message: execution.error?.message ?? 'No message',\n});\nconst timestamp = Date.now().toString();\nconst signature = crypto\n  .createHmac('sha256', $env.N8N_TO_CONVEX_SECRET)\n  .update(`${timestamp}.POST.${path}.${body}`)\n  .digest('hex');\n\nreturn [{ json: { body, timestamp, signature } }];"
+      }
+    },
+    {
+      "id": "post",
+      "name": "Report failure to Convex",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_SITE_URL }}/n8n/workflow-errors",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-LendLoop-Timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "X-LendLoop-Signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.body }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "A workflow failed": {
+      "main": [
+        [
+          {
+            "node": "Sign failure report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign failure report": {
+      "main": [
+        [
+          {
+            "node": "Report failure to Convex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

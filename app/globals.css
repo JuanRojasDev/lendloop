@@ -1,0 +1,336 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/* Power-tool yellow and black: the look of the shelf this app replaces. */
+:root {
+  --background: oklch(0.985 0.004 85);
+  --foreground: oklch(0.2 0.01 95);
+  --card: oklch(0.995 0.002 95);
+  --card-foreground: oklch(0.2 0.01 95);
+  --popover: oklch(0.995 0.002 95);
+  --popover-foreground: oklch(0.2 0.01 95);
+  --primary: oklch(0.86 0.17 92);
+  --primary-foreground: oklch(0.2 0.02 95);
+  --secondary: oklch(0.935 0.008 85);
+  --secondary-foreground: oklch(0.2 0.01 95);
+  --muted: oklch(0.945 0.008 85);
+  --muted-foreground: oklch(0.45 0.012 95);
+  --accent: oklch(0.94 0.07 95);
+  --accent-foreground: oklch(0.2 0.02 95);
+  --destructive: oklch(0.5 0.17 25);
+  --border: oklch(0.9 0.01 85);
+  --input: oklch(0.85 0.006 95);
+  --ring: oklch(0.2 0.01 95);
+  --good: oklch(0.4 0.09 150);
+  --good-soft: oklch(0.93 0.04 150);
+  --warn: oklch(0.42 0.09 85);
+  --warn-soft: oklch(0.94 0.07 95);
+  --bad: oklch(0.45 0.15 25);
+  --bad-soft: oklch(0.93 0.04 25);
+  --radius: 0.625rem;
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.18 0.008 95);
+    --foreground: oklch(0.95 0.005 95);
+    --card: oklch(0.23 0.009 95);
+    --card-foreground: oklch(0.95 0.005 95);
+    --popover: oklch(0.25 0.009 95);
+    --popover-foreground: oklch(0.95 0.005 95);
+    --secondary: oklch(0.29 0.009 95);
+    --secondary-foreground: oklch(0.95 0.005 95);
+    --muted: oklch(0.27 0.009 95);
+    --muted-foreground: oklch(0.74 0.012 95);
+    --accent: oklch(0.33 0.05 95);
+    --accent-foreground: oklch(0.95 0.005 95);
+    --destructive: oklch(0.72 0.14 25);
+    --border: oklch(0.33 0.01 95);
+    --input: oklch(0.38 0.01 95);
+    --ring: oklch(0.86 0.17 92);
+    --good: oklch(0.8 0.1 150);
+    --good-soft: oklch(0.3 0.04 150);
+    --warn: oklch(0.86 0.15 92);
+    --warn-soft: oklch(0.33 0.05 95);
+    --bad: oklch(0.78 0.12 25);
+    --bad-soft: oklch(0.31 0.05 25);
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply bg-background text-foreground;
+    scrollbar-color: var(--border) transparent;
+  }
+  body {
+    @apply bg-background font-sans text-foreground;
+    font-variant-numeric: tabular-nums;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  input,
+  textarea {
+    caret-color: var(--foreground);
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.page-title {
+  font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+}
+
+.hero-title {
+  font-size: clamp(2.75rem, 2rem + 3.4vw, 4.5rem);
+  line-height: 1.02;
+}
+
+/* Sizes itself from the space available, so it needs no breakpoints. */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+}
+
+input:user-invalid,
+textarea:user-invalid {
+  border-color: var(--destructive);
+}
+
+/* Reacts to the width of its own column, not to the viewport. */
+.loan-card {
+  container-type: inline-size;
+}
+
+.loan-card:has([data-overdue]) {
+  border-color: var(--bad);
+}
+
+.loan-card__head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.loan-card__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@container (width > 34rem) {
+  .loan-card__head {
+    grid-template-columns: auto 1fr auto;
+  }
+  .loan-card__actions {
+    grid-column: auto;
+  }
+}
+
+/* The photo backdrop, so tiles stay warm while images load. */
+.photo-tile {
+  overflow: hidden;
+  background: oklch(0.93 0.025 75);
+}
+
+.photo-tile img {
+  transition: scale 320ms var(--ease-out-strong);
+}
+
+/* Photo and text sit on shared rows, so a card row lines up. */
+.tool-card {
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  row-gap: 0.75rem;
+  transition: translate 200ms var(--ease-out-strong);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tool-card:hover {
+    translate: 0 -2px;
+  }
+  .tool-card:hover img {
+    scale: 1.03;
+  }
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-block-size: 100svh;
+}
+
+/* Lines the headline up with the content edge of the section below. */
+.hero-copy {
+  padding-inline: 1.5rem;
+}
+
+@media (width >= 64rem) {
+  .hero-copy {
+    padding-inline-start: max(3rem, calc((100vw - 80rem) / 2 + 3rem));
+    padding-inline-end: 3rem;
+  }
+}
+
+@media (width >= 60rem) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: 1fr;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-photo img {
+      animation: hero-zoom linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes hero-zoom {
+  to {
+    scale: 1.08;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.stagger > * {
+  animation: rise 320ms var(--ease-out-strong) backwards;
+}
+
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(n + 6) { animation-delay: 200ms; }
+
+@supports (animation-delay: calc(sibling-index() * 1ms)) {
+  .stagger > * {
+    animation-delay: min(calc((sibling-index() - 1) * 40ms), 200ms);
+  }
+}
+
+textarea {
+  field-sizing: content;
+  min-block-size: 3lh;
+  max-block-size: 8lh;
+}
+
+.chip-rail {
+  scroll-snap-type: inline proximity;
+}
+
+.chip-rail > * > * {
+  scroll-snap-align: start;
+}
+
+/* Native disclosure that animates to its real height. */
+.activity {
+  interpolate-size: allow-keywords;
+}
+
+.activity::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 220ms var(--ease-out-strong),
+    content-visibility 220ms allow-discrete;
+}
+
+.activity[open]::details-content {
+  block-size: auto;
+}
+
+.activity summary {
+  cursor: pointer;
+  width: fit-content;
+}
+
+.activity__chevron {
+  transition: rotate 160ms var(--ease-out-strong);
+}
+
+.activity[open] .activity__chevron {
+  rotate: 90deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger > * {
+    animation: none;
+  }
+  .photo-tile img,
+  .tool-card,
+  .activity::details-content,
+  .activity__chevron {
+    transition: none;
+  }
+}
